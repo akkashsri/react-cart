@@ -5,11 +5,28 @@ import ProductsPage from './pages/ProductsPage';
 import SingleProduct from './pages/SingleProduct';
 import Cart from './pages/Cart';
 import Navigation from'./components/Navigation';
+import { CartContext } from './CartContext';
+import { useEffect, useState } from 'react';
+import {getCart, storeCart} from './helpers'
 
 const App = () => {
+const [ cart, setCart] = useState({});
+// Fetch from local storage
+useEffect(() => {
+    getCart().then(cart => {
+        setCart(JSON.parse(cart));
+    });  
+}, []);
+
+useEffect(() => {
+    storeCart(JSON.stringify(cart));
+}, [cart])
+
+
     return (
         <>
             <Router>
+                <CartContext.Provider value={{cart, setCart}}>
                 <Navigation />
                 <Routes>
                 <Route path="/" element={<Home/>}></Route>
@@ -18,6 +35,7 @@ const App = () => {
                 <Route path="/products/:_id" element={<SingleProduct/>}></Route>
                 <Route path="/cart" element={<Cart/>}></Route>
                 </Routes>
+                </CartContext.Provider>
             </Router>
         </>
     )
